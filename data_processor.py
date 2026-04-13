@@ -7,11 +7,12 @@ This script processes the P-DESTRE dataset to prepare it for YOLO training.
 It extracts frames from videos, converts annotations to YOLO format,
 and organizes the data into train/val/test splits.
 
-P-DESTRE Annotation Format:
-frame_id, track_id, x, y, width, height, confidence, x_3d, y_3d, z_3d, 
-occlusion, truncation, orientation, motion_blur, illumination, weather, 
-scene, time_of_day, age, gender, clothing, action, interaction, 
-group_size, group_type, group_activity, group_density, group_cohesion
+P-DESTRE Annotation Format (26 columns):
+frame_id, track_id, x, y, width, height, confidence, x_3d, y_3d, z_3d,
+occlusion, action_type, is_carrying, carrying_position,
+clothing_upper, color_upper, clothing_lower, color_lower,
+footwear_type, footwear_color, hair_type, gender,
+age, height_cat, body_type, ethnicity
 """
 
 import os
@@ -63,13 +64,16 @@ class PDestreDataProcessor:
         # Video extensions
         self.video_extensions = ['.MP4', '.mp4', '.avi', '.mov']
         
-        # P-DESTRE annotation columns
+        # P-DESTRE annotation columns (26 columns)
+        # Cols 1-10: MOT-style tracking fields
+        # Cols 11-26: soft-biometric attributes
         self.annotation_columns = [
             'frame_id', 'track_id', 'x', 'y', 'width', 'height', 'confidence',
-            'x_3d', 'y_3d', 'z_3d', 'occlusion', 'truncation', 'orientation',
-            'motion_blur', 'illumination', 'weather', 'scene', 'time_of_day',
-            'age', 'gender', 'clothing', 'action', 'interaction', 'group_size',
-            'group_type', 'group_activity', 'group_density', 'group_cohesion'
+            'x_3d', 'y_3d', 'z_3d',
+            'occlusion', 'action_type', 'is_carrying', 'carrying_position',
+            'clothing_upper', 'color_upper', 'clothing_lower', 'color_lower',
+            'footwear_type', 'footwear_color', 'hair_type', 'gender',
+            'age', 'height_cat', 'body_type', 'ethnicity'
         ]
         
     def create_output_directories(self):
