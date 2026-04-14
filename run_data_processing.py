@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Script to run P-DESTRE data processing for YOLO training
-This is a convenience script with default parameters for quick testing
-"""
-
 import os
 import sys
 from pathlib import Path
@@ -13,8 +7,8 @@ def main():
     """Run data processing with default parameters"""
     
     # Default parameters
-    dataset_path = "P-DESTRE"
-    output_path = "processed_data"
+    dataset_path = "../P-DESTRE"
+    output_path = "../processed_pdestre"
     frame_rate = 5  # Extract every 5th frame to reduce data size
     min_confidence = 0.5
     min_box_size = 20
@@ -61,13 +55,13 @@ def main():
             seed=seed
         )
         
-        print("\n✅ Data processing completed successfully!")
-        print(f"📁 Processed data saved to: {output_path}")
-        print(f"📄 YOLO config file: {output_path}/config/dataset.yaml")
-        print(f"📊 Dataset info: {output_path}/dataset_info.json")
+        print("\n Data processing completed successfully!")
+        print(f" Processed data saved to: {output_path}")
+        print(f" YOLO config file: {output_path}/config/dataset.yaml")
+        print(f" Dataset info: {output_path}/dataset_info.json")
         
     except Exception as e:
-        print(f"\n❌ Error during processing: {e}")
+        print(f"\n Error during processing: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":

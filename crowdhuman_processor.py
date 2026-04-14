@@ -255,9 +255,9 @@ class CrowdHumanProcessor:
 
 def main():
     parser = argparse.ArgumentParser(description='Process CrowdHuman dataset for YOLO training')
-    parser.add_argument('--dataset_path', type=str, required=True,
+    parser.add_argument('--dataset_path', type=str, default='../CrowdHuman',
                         help='Path to CrowdHuman root directory')
-    parser.add_argument('--output_path', type=str, required=True,
+    parser.add_argument('--output_path', type=str, default='../processed_crowdhuman',
                         help='Path to save processed YOLO data')
     parser.add_argument('--min_box_size', type=int, default=20,
                         help='Minimum box dimension in pixels after clipping')

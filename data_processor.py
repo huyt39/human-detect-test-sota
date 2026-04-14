@@ -1,20 +1,3 @@
-#!/usr/bin/env python3
-"""
-Data Processor for P-DESTRE Dataset
-Human Detection Training for YOLO
-
-This script processes the P-DESTRE dataset to prepare it for YOLO training.
-It extracts frames from videos, converts annotations to YOLO format,
-and organizes the data into train/val/test splits.
-
-P-DESTRE Annotation Format (26 columns):
-frame_id, track_id, x, y, width, height, confidence, x_3d, y_3d, z_3d,
-occlusion, action_type, is_carrying, carrying_position,
-clothing_upper, color_upper, clothing_lower, color_lower,
-footwear_type, footwear_color, hair_type, gender,
-age, height_cat, body_type, ethnicity
-"""
-
 import os
 import cv2
 import numpy as np
@@ -65,15 +48,17 @@ class PDestreDataProcessor:
         self.video_extensions = ['.MP4', '.mp4', '.avi', '.mov']
         
         # P-DESTRE annotation columns (26 columns)
-        # Cols 1-10: MOT-style tracking fields
-        # Cols 11-26: soft-biometric attributes
+        # Cols 0-6:  MOT-style: frame_id, track_id, x, y, w, h, confidence
+        # Cols 7-9:  Head pose: yaw, pitch, roll
+        # Cols 10-25: 16 soft-biometric attributes (gender, age, height,
+        #             body volume, ethnicity, hair color, hairstyle, beard,
+        #             mustache, glasses, head accessories, action,
+        #             accessories, clothing x3) — exact column order unverified
+        # NOTE: Only cols 0-6 are used for detection; the rest are unused.
         self.annotation_columns = [
             'frame_id', 'track_id', 'x', 'y', 'width', 'height', 'confidence',
-            'x_3d', 'y_3d', 'z_3d',
-            'occlusion', 'action_type', 'is_carrying', 'carrying_position',
-            'clothing_upper', 'color_upper', 'clothing_lower', 'color_lower',
-            'footwear_type', 'footwear_color', 'hair_type', 'gender',
-            'age', 'height_cat', 'body_type', 'ethnicity'
+            'yaw', 'pitch', 'roll',
+            *[f'attr_{i}' for i in range(16)]
         ]
         
     def create_output_directories(self):
@@ -426,9 +411,9 @@ class PDestreDataProcessor:
 def main():
     """Main function"""
     parser = argparse.ArgumentParser(description='Process P-DESTRE dataset for YOLO training')
-    parser.add_argument('--dataset_path', type=str, required=True,
+    parser.add_argument('--dataset_path', type=str, default='../P-DESTRE',
                        help='Path to P-DESTRE dataset directory')
-    parser.add_argument('--output_path', type=str, required=True,
+    parser.add_argument('--output_path', type=str, default='../processed_pdestre',
                        help='Path to save processed data')
     parser.add_argument('--frame_rate', type=int, default=1,
                        help='Frame extraction rate (1=every frame, 2=every 2nd frame, etc.)')
