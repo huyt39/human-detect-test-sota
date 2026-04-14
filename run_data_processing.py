@@ -9,7 +9,7 @@ def main():
     # Default parameters
     dataset_path = "../P-DESTRE"
     output_path = "../processed_pdestre"
-    frame_rate = 5  # Extract every 5th frame to reduce data size
+    frame_rate = 10  # Extract every 10th frame to reduce data size
     min_confidence = 0.5
     min_box_size = 20
     train_ratio = 0.7
