@@ -1,15 +1,3 @@
-#!/usr/bin/env python3
-"""
-CrowdHuman Dataset Processor for YOLO Training
-
-Converts CrowdHuman .odgt annotations to YOLO format.
-CrowdHuman annotation format (per line, JSON):
-  {"ID": "image_id", "gtboxes": [{"tag": "person", "fbox": [x,y,w,h], ...}, ...]}
-
-fbox = full body box [x_topleft, y_topleft, width, height] in pixels.
-Values can be negative (person partially outside frame).
-"""
-
 import json
 import cv2
 import shutil
@@ -25,8 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class CrowdHumanProcessor:
-    """Converts CrowdHuman dataset to YOLO format."""
-
+    # converts to YOLO format
     def __init__(self, dataset_path: str, output_path: str,
                  min_box_size: int = 20, min_visibility: float = 0.4):
         """
@@ -43,18 +30,14 @@ class CrowdHumanProcessor:
 
         self._create_dirs()
 
-    # ------------------------------------------------------------------
-    # Directory setup
-    # ------------------------------------------------------------------
+    # directory setup
     def _create_dirs(self):
         for split in ('train', 'val'):
             (self.output_path / 'images' / split).mkdir(parents=True, exist_ok=True)
             (self.output_path / 'labels' / split).mkdir(parents=True, exist_ok=True)
         (self.output_path / 'config').mkdir(parents=True, exist_ok=True)
 
-    # ------------------------------------------------------------------
     # Image lookup – images are spread across train1/ train2/ train3/ val/
-    # ------------------------------------------------------------------
     def _build_image_index(self) -> Dict[str, Path]:
         """Map image ID → file path across all sub-folders."""
         index: Dict[str, Path] = {}
@@ -66,9 +49,7 @@ class CrowdHumanProcessor:
         logger.info(f"Indexed {len(index)} images across CrowdHuman sub-folders")
         return index
 
-    # ------------------------------------------------------------------
-    # Annotation parsing
-    # ------------------------------------------------------------------
+    # annotation parsing
     @staticmethod
     def _parse_odgt(odgt_path: Path) -> List[dict]:
         """Read .odgt file (one JSON object per line)."""
@@ -80,9 +61,7 @@ class CrowdHumanProcessor:
                     records.append(json.loads(line))
         return records
 
-    # ------------------------------------------------------------------
-    # Box conversion
-    # ------------------------------------------------------------------
+    # box conversion
     def _fbox_to_yolo(self, fbox: List[float], img_w: int, img_h: int
                       ) -> Tuple[bool, Tuple[float, float, float, float]]:
         """
@@ -123,9 +102,7 @@ class CrowdHumanProcessor:
             max(0, min(1, nh)),
         )
 
-    # ------------------------------------------------------------------
-    # Process a single split
-    # ------------------------------------------------------------------
+    # process a single split
     def _process_split(self, records: List[dict], image_index: Dict[str, Path],
                        split: str) -> Dict:
         stats = {'images': 0, 'boxes': 0, 'skipped_no_img': 0, 'skipped_boxes': 0}
@@ -179,9 +156,7 @@ class CrowdHumanProcessor:
 
         return stats
 
-    # ------------------------------------------------------------------
-    # Main entry point
-    # ------------------------------------------------------------------
+    # main entry point
     def process(self, seed: int = 42):
         """Process the full CrowdHuman dataset."""
         image_index = self._build_image_index()
@@ -211,9 +186,7 @@ class CrowdHumanProcessor:
         self._write_info(all_stats)
         self._print_summary(all_stats)
 
-    # ------------------------------------------------------------------
-    # Config / info files
-    # ------------------------------------------------------------------
+    # config / info files
     def _write_config(self):
         import yaml
         cfg = {
